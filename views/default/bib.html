@@ -1,0 +1,41 @@
+{{
+  response.files.append(URL('static','js/jquery.js'))
+  response.files.append(URL('static','css/web2py.css'))
+  response.files.append(URL('static','css/pure/pure-min.css'))
+}}
+{{extend 'layout.html'}}
+
+{{=form}}
+<div style="background-color: white; color: black;">
+<h2>References</h2>
+<!-- <table style="border: solid 1px;
+              table-layout: fixed;
+              width: 99%;
+              padding: 0px 30px 15px 30px;
+              float: center;"> -->
+<table class="pure-table pure-table-bordered" style="table-layout: fixed; width: 100%">
+  <colgroup>
+    <col style="width: 5%;">
+    <col style="width: auto;">
+    <col style="width: 25%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>{{=T('Reference')}}</th>
+      <th>{{=T('Bibkey')}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{n=1}}
+    {{for i in idx:}}
+    <tr>
+      <td>[{{=n}}]</td>
+      <td style="word-wrap:break-word">{{=list[i]}}</td>
+      <td>{{=i}}</td>
+      {{n=n+1}}
+    </tr>
+    {{pass}}
+  </tbody>
+</table>
+</div>

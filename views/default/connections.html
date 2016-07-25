@@ -1,0 +1,95 @@
+{{
+  response.files.append(URL('static','js/jquery.js'))
+  response.files.append(URL('static','css/web2py.css'))
+  response.files.append(URL('static','css/pure/pure-min.css'))
+  response.files.append(URL('static','css/brainstorm.css'))
+}}
+{{extend 'layout.html'}}
+
+<div id='form_conn' class="equalHWrap eqWrap" >
+<div id='form_fields' class="equalHW eq">
+{{=form}}
+</div>
+<div id='form_info' class="equalHW eq">
+<div class="web2py_grid">
+<div class="web2py_table">
+<div class="web2py_htmltable" style="width:100%;overflow-x:auto;-ms-overflow-x:scroll">
+<table>
+  <thead>
+  <tr>
+    <th>Source</th>
+    <th>Type</th>
+    <th>Qualifier</th>
+    <th>Value</th>
+  </tr>
+  </thead>
+  <tr>
+    <td id="source_info"></td>
+    <td id="type_info"></td>
+    <td id="q_info"></td>
+    <td id="qv_info"></td>
+  </tr>
+  <thead>
+  <tr>
+    <th colspan="4">Destinies</th>
+  </tr>
+  <tr>
+    <td colspan="4" id="dest_info"></td>
+  </tr>
+  <thead>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+{{=grid}}
+
+<script>
+var selectedDestinies = [];
+
+function update_conn_info(){
+  $("#source_info").html($('#no_table_source_id option:selected').text())
+  $("#type_info").html($('#no_table_edtype option:selected').text())
+  $("#q_info").html($('#no_table_qualifier option:selected').text())
+  $("#qv_info").html($('#no_table_q_value').val())
+  $("#dest_info").html("")
+  $('#no_table_destinies option:selected').each(function(index,element){
+    $("#dest_info").append(element.text+"<br>")
+  });
+}
+
+$('#no_table_edtype,#no_table_source_id,#no_table_qualifier,#no_table_q_value').change(function(){
+  sLen = selectedDestinies.length;
+  for (i = 0; i < sLen; i++) {
+    e=selectedDestinies[i]
+    $("#no_table_destinies option[value='" + e + "']").prop("selected", false);
+  }
+  selectedDestinies = [];
+  all_chosen = ($('#no_table_source_id').val() && $('#no_table_edtype').val() && $('#no_table_qualifier').val())
+  if(all_chosen){
+    $.ajax({
+      url: "{{=URL('default','mark_destiny_connections')}}",
+      type: 'post',
+      data: {
+        'source_id': $('#no_table_source_id').val(),
+        'e_type': $('#no_table_edtype').val(),
+        'qualifier': $('#no_table_qualifier').val(),
+        'q_value': $('#no_table_q_value').val()
+      },
+      success: function(r){
+          $.each(r.split(","), function(i,e){
+              $("#no_table_destinies option[value='" + e + "']").prop("selected", true);
+              selectedDestinies.push(e);
+          });
+          update_conn_info()
+      },
+    });
+  }
+  update_conn_info()
+});
+
+$("#no_table_destinies").change(function(){
+  update_conn_info()
+});
+</script>

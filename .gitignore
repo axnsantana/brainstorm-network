@@ -1,0 +1,7 @@
+**/appconfig.ini
+**/errors/*
+**/sessions/*
+**/*~
+**/*.log
+**/*.pyc
+

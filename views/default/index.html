@@ -1,0 +1,227 @@
+{{
+  response.files.append(URL('static','js/jquery.js'))
+  response.files.append(URL('static','css/web2py.css'))
+  response.files.append(URL('static','js/vis.min.js'))
+  response.files.append(URL('static','css/vis.min.css'))
+  response.files.append(URL('static','css/brainstorm.css'))
+  response.files.append(URL('static','css/pure/pure-min.css'))
+}}
+{{extend 'layout.html'}}
+
+
+<div class="container-fluid">
+ <div class="row">
+  <div class="col-sm-12 col-md-12">
+{{=search}}
+</div>
+</div>
+</div>
+
+<div class="container-fluid">
+ <div class="row">
+  <div class="col-sm-6 col-md-6">
+    <div id='network'></div>
+  </div>
+  <div id="loadingBar">
+    <div id="text">0%</div>
+    <div id="border">
+     <div id="bar"></div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-md-6">
+    <div id='informations' ></div>
+  </div>
+</div>
+</div>
+<script type="text/javascript">
+var color = 'gray';
+var len = undefined;
+
+var nodes = [
+{{for n in nodes:}}
+   {id: {{=n}},
+   label: "{{=nodes[n]['name']}}",
+   title: "{{=nodes[n]['info']}}",
+   value:"{{=nodes[n]['weight']}}",
+   shape:"{{=nodes[n]['shape']}}",
+   group:"{{=nodes[n]['group']}}" },
+{{pass}}
+];
+var edges = [
+{{for l in links:}}
+   {from:{{=links[l]['source_id']}}, to:{{=links[l]['destiny_id']}},
+   title:"{{=links[l]['info']}}",
+   id: "{{=links[l]['id']}}",
+   value:"{{=links[l]['weight']}}"},
+{{pass}}
+]
+
+var container = document.getElementById('network');
+
+var data = {
+  nodes: nodes,
+  edges: edges
+}
+
+var options = {
+    clickToUse: false,
+    nodes: {
+        shape: 'dot',
+        size: 20,
+        font: {
+            size: 10,
+            color: '#000000'
+        },
+        color: {
+            border: '#2B7CE9',
+            background: '#97C2FC',
+            highlight: {
+                border: '#ff6309',
+                background: '#ff9152'
+            },
+            hover: {
+                border: '#00e604',
+                background: '#b2f7b3'
+            }
+        },
+        borderWidth: 2,
+        shapeProperties: {
+          borderDashes: false, // only for borders
+          borderRadius: 6,     // only for box shape
+          interpolation: false,  // only for image and circularImage shapes
+          useImageSize: false,  // only for image and circularImage shapes
+          useBorderWithImage: false  // only for image shape
+        },
+    },
+    edges: {
+        smooth: false,
+        arrows: {
+           to:     {enabled: false, scaleFactor:0.3},
+           middle: {enabled: false, scaleFactor:1},
+           from:   {enabled: false, scaleFactor:1}
+        },
+        scaling:{
+           min: 2,
+           max: 7,
+        },
+        color: {
+          color:'#5f5d5d',
+          highlight:'#000000',
+          hover: '#000000',
+          inherit: false,
+          opacity:1.0
+        },
+    },
+    layout: {
+        randomSeed: undefined,
+        improvedLayout:true,
+        hierarchical: {
+           enabled:false,
+           levelSeparation: 150,
+           nodeSpacing: 100,
+           treeSpacing: 200,
+           blockShifting: true,
+           edgeMinimization: true,
+           parentCentralization: true,
+           direction: 'UD',        // UD, DU, LR, RL
+           sortMethod: 'hubsize'   // hubsize, directed
+        }
+    },
+    interaction:{
+        dragNodes:true,
+        dragView: true,
+        hideEdgesOnDrag: true,
+        hideNodesOnDrag: false,
+        hover: true,
+        hoverConnectedEdges: true,
+        multiselect: true,
+    },
+    physics:{
+        solver: 'forceAtlas2Based',
+        //solver: 'barnesHut',
+    },
+  //   configure: {
+  //   enabled: true,
+  //   filter: 'nodes,edges',
+  //   container: document.getElementById('options'),
+  //   showButton: true
+  // }
+};
+
+// create a network
+var network = new vis.Network(container, data, options);
+
+function showInfo(nodes,edges) {
+  $.ajax({
+    url: '{{=URL('default', 'display_info')}}',
+    type: 'post',
+    data: {
+      'edges': edges,
+      'nodes': nodes
+    },
+    beforeSend: function() {
+        $('#informations').html("<img src='{{=URL('static','images/loading.gif')}}'/>");
+    },
+    success: function(r){
+        $('#informations').html(r);
+    },
+    error: function(xhr, status, error) {
+        $('#informations').html(xhr);
+    }
+  });
+};
+
+network.on("click", function (params) {
+   showInfo(params.nodes,params.edges);
+});
+
+
+network.on("stabilizationProgress", function(params) {
+    var maxWidth = 496;
+    var minWidth = 20;
+    var widthFactor = params.iterations/params.total;
+    var width = Math.max(minWidth,maxWidth * widthFactor);
+
+    document.getElementById('bar').style.width = width + 'px';
+    document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+});
+
+network.once("stabilizationIterationsDone", function() {
+    document.getElementById('text').innerHTML = '100%';
+    document.getElementById('bar').style.width = '496px';
+    document.getElementById('loadingBar').style.opacity = 0;
+    // really clean the dom element
+    setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+    network.storePositions();
+});
+
+window.onresize = function() {network.fit();}
+
+function focusNode(node){
+  var options = {
+  // position: {x:positionx,y:positiony}, // this is not relevant when focusing on nodes
+     scale: 1.0,
+     offset: {x:0,y:0},
+     animation: {
+       duration: 1000,
+       easingFunction: "easeInOutQuad"
+     }
+  };
+  network.focus(node,options);
+};
+
+$("#no_table_search").change(function(){
+   list=[]
+   $('#no_table_search option:selected').each(function(index,element){
+     list.push(element.value)
+   });
+   network.selectNodes(list,true);
+   if(list.length == 1){
+     focusNode(list[0]);
+   } else {
+     network.fit();
+   }
+   showInfo(network.getSelectedNodes(),network.getSelectedEdges());
+});
+
+</script>

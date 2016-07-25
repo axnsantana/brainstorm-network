@@ -1,0 +1,73 @@
+#brainstorm2 {
+  background: white;
+}
+#wrapper2 {
+width: 100%;
+border-radius: 0px;
+color: black;
+background: white;
+padding: 0em;
+margin: 0px;
+}
+#network {
+height: 50vh;
+border: 2px solid #73AD21;
+}
+#informations {
+  border: 2px solid #544AEF;
+  overflow-y: scroll;
+}
+#loadingBar {
+    position:absolute;
+    top:50%;
+    left:30px;
+    width: 902px;
+    height: 902px;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    opacity:1;
+}
+#text {
+    position:absolute;
+    top:8px;
+    left:530px;
+    width:30px;
+    height:50px;
+    margin:auto auto auto auto;
+    font-size:22px;
+    color: #000000;
+}
+
+#border {
+    position:absolute;
+    top:10px;
+    left:10px;
+    width:500px;
+    height:23px;
+    margin:auto auto auto auto;
+    box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+    border-radius:10px;
+}
+
+#bar {
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:20px;
+    height:20px;
+    margin:auto auto auto auto;
+    border-radius:11px;
+    border:2px solid rgba(30,30,30,0.05);
+    background: rgb(0, 173, 246); /* Old browsers */
+    box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+}
+
+/**custom**/
+/**
+.eqWrap { display: flex; }
+.eq { padding: 10px; }
+.equalHW { flex: 1; }
+**/

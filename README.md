@@ -19,7 +19,7 @@ It is in the beginning, accepting collaboration.
 
 ### Tech
 
-The main requeriment is the web2py application:
+The main requirement is the web2py application:
 * [Web2Py](https://github.com/web2py/web2py/) - Free and open source full-stack enterprise framework for agile development of secure database-driven web-based applications, written and programmable in Python.
 
 ### Installation

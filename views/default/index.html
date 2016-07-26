@@ -151,6 +151,17 @@ var options = {
 // create a network
 var network = new vis.Network(container, data, options);
 
+var selectedNodes = [];
+
+function unselectNodes(){
+  sLen = selectedNodes.length;
+  for (i = 0; i < sLen; i++) {
+    e=selectedNodes[i]
+    $("#no_table_search option[value='" + e + "']").prop("selected", false);
+  }
+  selectedNodes = [];
+}
+
 function showInfo(nodes,edges) {
   $.ajax({
     url: '{{=URL('default', 'display_info')}}',
@@ -169,6 +180,13 @@ function showInfo(nodes,edges) {
         $('#informations').html(xhr);
     }
   });
+  unselectNodes();
+  var total_selected = nodes.length
+  for (var n = 0; n < total_selected; n++){
+    var nodeId = nodes[n];
+    $('#no_table_search option[value="'+nodeId+'"]').prop("selected", true);
+    selectedNodes.push(nodeId);
+  }
 };
 
 network.on("click", function (params) {

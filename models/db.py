@@ -29,6 +29,20 @@ def format_edge(r):
         return '%s <%s> %s' % (db.nodes(r.source_id).name,db.edge_types(r.e_type).name,db.nodes(r.destiny_id).name)
     return '%s <%s> <%s> %s %s' % (db.nodes(r.source_id).name,db.edge_types(r.e_type).name,db.qualifiers(r.qualifier).name,r.q_value,db.nodes(r.destiny_id).name)
 
+def format_bibtex(code,r):
+    from pybtex.database.input import bibtex
+    from pybtex.database import BibliographyData
+    import sys
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
+
+    parser = bibtex.Parser()
+    bib_data = parser.parse_string(code)
+    bibstr = ""
+    fields = bib_data.entries[r.bibkey].rich_fields.values()
+    for f in fields:
+        bibstr += "%s." % f.render_as('html')
+    return bibstr
 
 if not request.env.web2py_runtime_gae:
     # ---------------------------------------------------------------------
@@ -81,6 +95,7 @@ if not request.env.web2py_runtime_gae:
       Field('bibkey',length=255,unique=True,label=T("Key")),
       Field('code',type='text',label=T("Bibtex source")),
       format = '%(bibkey)s')
+    db.bibliographies.code.represent = lambda code,row: format_bibtex(code,row)
 
     db.define_table('informations',
       Field('info',type='text',label=T("Information")),

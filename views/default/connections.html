@@ -1,48 +1,49 @@
 {{
   response.files.append(URL('static','js/jquery.js'))
-  response.files.append(URL('static','css/web2py.css'))
-  response.files.append(URL('static','css/pure/pure-min.css'))
   response.files.append(URL('static','css/brainstorm.css'))
 }}
 {{extend 'layout.html'}}
 
-<div id='form_conn' class="equalHWrap eqWrap" >
-<div id='form_fields' class="equalHW eq">
-{{=form}}
+<div class="container-fluid">
+ <div class="row">
+  <div class="col-sm-6 col-md-6">
+    {{=form}}
+  </div>
+  <div class="col-sm-6 col-md-6">
+    <div class="web2py_grid">
+    <div class="web2py_table">
+    <div class="web2py_htmltable" style="width:100%;overflow-x:auto;-ms-overflow-x:scroll">
+    <table>
+      <thead>
+      <tr>
+        <th>Source</th>
+        <th>Type</th>
+        <th>Qualifier</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tr>
+        <td id="source_info"></td>
+        <td id="type_info"></td>
+        <td id="q_info"></td>
+        <td id="qv_info"></td>
+      </tr>
+      <thead>
+      <tr>
+        <th colspan="4">Destinies</th>
+      </tr>
+      <tr>
+        <td colspan="4" id="dest_info"></td>
+      </tr>
+      <thead>
+    </table>
+    </div>
+    </div>
+    </div>
+  </div>
 </div>
-<div id='form_info' class="equalHW eq">
-<div class="web2py_grid">
-<div class="web2py_table">
-<div class="web2py_htmltable" style="width:100%;overflow-x:auto;-ms-overflow-x:scroll">
-<table>
-  <thead>
-  <tr>
-    <th>Source</th>
-    <th>Type</th>
-    <th>Qualifier</th>
-    <th>Value</th>
-  </tr>
-  </thead>
-  <tr>
-    <td id="source_info"></td>
-    <td id="type_info"></td>
-    <td id="q_info"></td>
-    <td id="qv_info"></td>
-  </tr>
-  <thead>
-  <tr>
-    <th colspan="4">Destinies</th>
-  </tr>
-  <tr>
-    <td colspan="4" id="dest_info"></td>
-  </tr>
-  <thead>
-</table>
 </div>
-</div>
-</div>
-</div>
-</div>
+
 {{=grid}}
 
 <script>

@@ -22,7 +22,7 @@ def index():
         link=links.get(edkey,{"info":label, "source_id":e['source_id'], "destiny_id":e['destiny_id'], "id":e['id'], "weight":0})
         link["weight"]+=1
         links[edkey]=link
-    #widget = SQLFORM.widgets.autocomplete(request, db.nodes.name, limitby=(0,10), min_length=3)   
+    #widget = SQLFORM.widgets.autocomplete(request, db.nodes.name, limitby=(0,10), min_length=3)
     #search_widget=SQLFORM.factory(Field('search',label=T("Search"),widget=widget),buttons=[])
     search_widget=SQLFORM.factory(Field('search','list:reference nodes',label=T("Search"),
 				  requires = IS_IN_DB(db, db.nodes, '%(name)s', multiple=True)),
@@ -178,35 +178,31 @@ def bib():
     reload(sys)
     sys.setdefaultencoding("utf-8")
 
-    parser = bibtex.Parser()
-    bib_form = FORM(T('Bibtex file:'),INPUT(_name='bib_file',_type='file'),INPUT(_type='submit'))
-    db.commit()
-    if bib_form.accepts(request.vars,session,formname='bib_form'):
-        if(request.vars['bib_file']==''):
-          response.flash = T('Please, select a file!')
-        else:
-          bib_data = parser.parse_string(request.vars['bib_file'].value)
-          for key in bib_data.entries.keys():
-            tmp = BibliographyData()
-            tmp.add_entry(key,bib_data.entries.get(key))
-            source_id = tmp.to_string('bibtex')
-            bibid=db.bibliographies.insert(bibkey=key,code=source_id)
-            if(bibid < 0):
-                db.rollback()
-                break
-          redirect(URL('bib'))
-    elif bib_form.errors:
-        response.flash = T('File has errors')
-    db.commit()
-    bibs = db().select(db.bibliographies.ALL,orderby=db.bibliographies.bibkey)
-    list_bibs = {}
-    idx = []
-    for bib in bibs:
-        bib_data = parser.parse_string(bib.code)
-        bibstr = ""
-        fields = bib_data.entries[bib.bibkey].rich_fields.values()
-        for f in fields:
-            bibstr += "%s." % f.render_as('html')
-        list_bibs[bib.bibkey]=bibstr
-        idx.append(bib.bibkey)
-    return dict(form=bib_form,list=list_bibs,idx=idx)
+    table=db.bibliographies
+    content = table_list(table,T("References"),table.bibkey)
+    grid_form = (('new' in request.args)or('edit' in request.args))
+    if(not grid_form):
+        parser = bibtex.Parser()
+        bib_form = FORM(T('Import from file:'),
+                        INPUT(_name='bib_file',_type='file'),
+                        INPUT(_type='submit',_value=T("Import")))
+        db.commit()
+        if bib_form.accepts(request.vars,session,formname='bib_form'):
+            if(request.vars['bib_file']==''):
+              response.flash = T('Please, select a file!')
+            else:
+              bib_data = parser.parse_string(request.vars['bib_file'].value)
+              for key in bib_data.entries.keys():
+                tmp = BibliographyData()
+                tmp.add_entry(key,bib_data.entries.get(key))
+                source_id = tmp.to_string('bibtex')
+                bibid=db.bibliographies.insert(bibkey=key,code=source_id)
+                if(bibid < 0):
+                    db.rollback()
+                    break
+              redirect(URL('bib'))
+        elif bib_form.errors:
+            response.flash = T('File has errors')
+        db.commit()
+        content['form']=bib_form
+    return content

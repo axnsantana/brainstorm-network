@@ -33,8 +33,7 @@ The steps to run this application are:
 ### Screenshot
 
 Brainstorm Network Visualization
-|network|
+![alt text][network]
 
 
-
-.. |network| image:: https://github.com/axnsantana/brainstorm-network/blob/master/screenshots/network.png
+[network]: https://github.com/axnsantana/brainstorm-network/blob/master/screenshots/network.png

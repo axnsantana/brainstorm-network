@@ -29,3 +29,12 @@ The steps to run this application are:
 - Inside of the web2py *applications* folder clone this project.
 - Copy *private/appconfig.ini* from the web2py *welcome* application into the Brainstorm application folder *private*. After this, configure this file with your preferences of database.
 - run the web2py server.
+
+### Screenshot
+
+Brainstorm Network Visualization
+|network|
+
+
+
+.. |network| image:: https://github.com/axnsantana/brainstorm-network/blob/master/screenshots/network.png
